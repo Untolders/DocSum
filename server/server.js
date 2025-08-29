@@ -1,21 +1,23 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
 const app = express();
 const port = 3001;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "*", // fallback if env not set
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-app.post('/api/summarize', async (req, res) => {
+app.post("/api/summarize", async (req, res) => {
   try {
     // 1. Collect API keys dynamically
     const apiKeys = [];
@@ -26,12 +28,12 @@ app.post('/api/summarize', async (req, res) => {
     }
 
     if (apiKeys.length === 0) {
-      return res.status(500).json({ error: 'No API keys configured on the server.' });
+      return res.status(500).json({ error: "No API keys configured on the server." });
     }
 
     const { text } = req.body;
     if (!text) {
-      return res.status(400).json({ error: 'Text is required.' });
+      return res.status(400).json({ error: "Text is required." });
     }
 
     // 2. Try each API key until one works
@@ -46,13 +48,7 @@ app.post('/api/summarize', async (req, res) => {
         const prompt = `
           Analyze the following document and provide the output in a valid JSON format.
           The JSON object must have the following keys: "short", "medium", "long", "keyPoints", and "mainIdeas".
-
-          - "short": A summary of the document in 2-3 sentences.
-          - "medium": A summary of the document in 1-2 paragraphs (4-6 sentences).
-          - "long": A summary of the document in 2-3 paragraphs (8-12 sentences).
-          - "keyPoints": An array of 5-7 concise, informative key points from the document.
-          - "mainIdeas": An array of 3-5 main ideas or themes as complete sentences.
-
+          ...
           Document:
           ---
           ${text}
@@ -64,39 +60,38 @@ app.post('/api/summarize', async (req, res) => {
         const responseText = response.text();
 
         // 3. Clean JSON (remove ```json fences if present)
-        const jsonString = responseText.replace(/```json|```/g, '').trim();
+        const jsonString = responseText.replace(/```json|```/g, "").trim();
 
         try {
           const parsed = JSON.parse(jsonString);
-          console.log(`Success with key #${k + 1}`);
+          console.log(`✅ Success with key #${k + 1}`);
           return res.json(parsed);
         } catch (parseError) {
-          console.error(" Failed to parse JSON from response:", parseError.message);
+          console.error("❌ Failed to parse JSON:", parseError.message);
           console.error("Raw model response:", responseText);
-
           return res.status(500).json({
             error: "Model returned invalid JSON format.",
-            raw: responseText
+            raw: responseText,
           });
         }
-
       } catch (apiError) {
-        console.warn(` Key #${k + 1} failed:`, apiError.message || apiError);
-
+        console.warn(`⚠️ Key #${k + 1} failed:`, apiError.message || apiError);
         if (k === apiKeys.length - 1) {
-          console.error(" All API keys failed.");
           return res.status(500).json({
-            error: `All available API keys have failed (quota exceeded, invalid, or other error).${error}`
+            error: "All available API keys have failed.",
           });
         }
       }
     }
   } catch (err) {
-    console.error("Unexpected server error:", err.message || err);
-    return res.status(500).json({ error: `Internal server error.${err}` });
+    console.error("Summarization API error:", err?.message || err);
+    return res.status(500).json({
+      error: "Internal server error",
+      details: err?.message || "Unknown error",
+    });
   }
 });
 
 app.listen(port, () => {
-  console.log(` Secure backend server running at http://localhost:${port}`);
+  console.log(`🚀 Secure backend server running at http://localhost:${port}`);
 });
