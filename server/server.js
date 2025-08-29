@@ -8,7 +8,11 @@ dotenv.config();
 const app = express();
 const port = 3001;
 
-app.use(cors());
+app.use(cors({
+  origin: `${process.env.FRONTEND_URL}`, // your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"], // allowed methods
+  credentials: true, // if you want to allow cookies/auth headers
+}));
 app.use(express.json());
 
 app.post('/api/summarize', async (req, res) => {
