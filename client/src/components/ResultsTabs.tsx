@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { SummaryDisplay } from "./SummaryDisplay";
 import { ExtractedContent } from "./ExtractedContent";
 import { Summary, ExtractedText } from "../types";
-import { FileText, Code, Key, Lightbulb } from "lucide-react";
+import { FileText, Code, Key, Lightbulb, Wrench } from "lucide-react";
 
-type Tab = "summary" | "original" | "keyPoints" | "mainIdeas";
+type Tab = "summary" | "original" | "keyPoints" | "mainIdeas" | "improvements";
 
 interface ResultsTabsProps {
   summary: Summary;
@@ -61,6 +61,33 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
     </div>
   );
 
+  const ImprovementsTab = () => (
+    <div className="bg-white rounded-xl shadow-lg border p-4 sm:p-6">
+      <div className="flex items-center space-x-2 mb-4">
+        <Wrench className="h-5 w-5 text-orange-600" />
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900">Improvement Suggestions</h3>
+      </div>
+      <div className="space-y-3">
+        {summary.improvements && summary.improvements.length > 0 ? (
+          summary.improvements.map((sugg, index) => (
+            <div
+              key={index}
+              className="bg-orange-50 rounded-lg p-3 sm:p-4 border-l-4 border-orange-500"
+            >
+              <p className="text-gray-800 text-sm sm:text-base leading-relaxed">
+                {sugg}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 italic">
+            No improvement suggestions available.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "summary":
@@ -79,6 +106,8 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
         return <KeyPointsTab />;
       case "mainIdeas":
         return <MainIdeasTab />;
+      case "improvements":
+        return <ImprovementsTab />;
       default:
         return null;
     }
@@ -92,6 +121,7 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
           { key: "summary", label: "Summary", icon: Code },
           { key: "keyPoints", label: "Key Points", icon: Key },
           { key: "mainIdeas", label: "Main Ideas", icon: Lightbulb },
+          { key: "improvements", label: "Improvements", icon: Wrench },
           { key: "original", label: "Original Text", icon: FileText },
         ].map(({ key, label, icon: Icon }) => (
           <button

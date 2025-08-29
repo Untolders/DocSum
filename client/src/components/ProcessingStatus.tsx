@@ -1,12 +1,9 @@
 import React from 'react';
 import { Loader2, CheckCircle, Circle, AlertCircle } from 'lucide-react';
-// The types below were being imported from '../types' before, 
-// but based on your code structure, it's better to define and export them here.
 
-// --- FIX: Add the 'export' keyword here ---
+// Types
 export type StageStatus = 'pending' | 'in-progress' | 'complete' | 'error';
 
-// --- FIX: Add the 'export' keyword here ---
 export interface ProcessingStage {
   name: string;
   status: StageStatus;
@@ -38,26 +35,35 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ stages, file
 
   return (
     <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border p-6">
+      {/* Header */}
       <div className="mb-4">
         <div className="flex items-center space-x-2 mb-1">
           {isComplete && <CheckCircle className="h-6 w-6 text-green-600" />}
           {hasError && <AlertCircle className="h-6 w-6 text-red-600" />}
           <h2 className="text-xl font-bold text-gray-900">
-            {isComplete ? 'Processing Complete' : hasError ? 'Processing Failed' : 'Processing Document'}
+            {isComplete
+              ? 'Processing Complete'
+              : hasError
+              ? 'Processing Failed'
+              : 'Processing Document'}
           </h2>
         </div>
-        <p className="text-gray-600">File: {fileName}</p>
+        <p className="text-gray-600 break-words">File: {fileName}</p>
       </div>
-      
+
+      {/* Stages */}
       <div className="space-y-4">
         {stages.map((stage) => (
           <div
             key={stage.name}
             className={`p-4 rounded-lg flex items-center space-x-4 transition-all duration-300 ${
-              stage.status === 'complete' ? 'bg-green-50 border border-green-200' :
-              stage.status === 'in-progress' ? 'bg-blue-50 border border-blue-200' :
-              stage.status === 'error' ? 'bg-red-50 border border-red-200' :
-              'bg-gray-50 border border-gray-200'
+              stage.status === 'complete'
+                ? 'bg-green-50 border border-green-200'
+                : stage.status === 'in-progress'
+                ? 'bg-blue-50 border border-blue-200'
+                : stage.status === 'error'
+                ? 'bg-red-50 border border-red-200'
+                : 'bg-gray-50 border border-gray-200'
             }`}
           >
             <div>{getIcon(stage.status)}</div>

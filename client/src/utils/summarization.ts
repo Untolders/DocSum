@@ -1,14 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { Summary } from "../types";
 
-// ✅ Backend API URL
+// Backend API URL
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api/summarize`;
 
-/**
- * Sends text to your secure server to generate a summary.
- * @param text - The text to be summarized.
- * @returns A promise that resolves to the complete summary object.
- */
+
 export const generateSummary = async (text: string): Promise<Summary> => {
   try {
     console.log("Sending text to secure server...");
@@ -51,7 +47,7 @@ export const generateSummary = async (text: string): Promise<Summary> => {
 };
 
 /**
- * ✅ Utility function to calculate reading time of given text.
+ * Utility function to calculate reading time of given text.
  * Returns a user-friendly string like "2 min read".
  */
 export const calculateReadingTime = (text: string): string => {

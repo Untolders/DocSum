@@ -70,14 +70,24 @@ app.post("/api/summarize", async (req, res, next) => {
       const genAI = new GoogleGenerativeAI(key);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      const prompt = `
-        Analyze the following document and provide the output in a valid JSON format.
-        The JSON object must have the following keys: "short", "medium", "long", "keyPoints", and "mainIdeas".
-        Document:
-        ---
-        ${text}
-        ---
-      `;
+    // ... inside app.post("/api/summarize", ...)
+
+const prompt = `
+  Analyze the following document and provide the output in a valid JSON format.
+  The JSON object must have ONLY the following keys: "short", "medium", "long", "keyPoints", "mainIdeas", and "improvements".
+
+  - "short", "medium", "long": Provide summaries of these respective lengths.
+  - "keyPoints": An array of strings, with each string being a critical point.
+  - "mainIdeas": An array of strings, with each string being a core concept.
+  - "improvements": An array of strings, where each string is a specific, actionable suggestion to improve the clarity, grammar, or impact of the original text.
+
+  Document:
+  ---
+  ${text}
+  ---
+`;
+
+// ... the rest of the function remains the same
 
       const result = await model.generateContent(prompt);
       const response = result.response;

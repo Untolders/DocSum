@@ -19,6 +19,7 @@ export interface Summary {
   long: string;
   keyPoints: string[];
   mainIdeas: string[];
+  improvements: string[];
 }
 
 export type SummaryLength = 'short' | 'medium' | 'long';

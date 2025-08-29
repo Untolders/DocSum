@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Download, Clock, Key, Lightbulb, Check } from 'lucide-react';
+import { Copy, Download, Clock, Key, Lightbulb, Check, Wrench } from 'lucide-react';
 import { Summary, SummaryLength } from '../types';
 import { calculateReadingTime } from '../utils/summarization';
 
@@ -35,11 +35,14 @@ Generated on: ${new Date().toLocaleString()}
 ${currentSummary}
 
 --- KEY POINTS ---
-${summary.keyPoints.map((point) => `- ${point}`).join('\n')}
+${summary.keyPoints.map((p) => `- ${p}`).join("\n")}
 
 --- MAIN IDEAS ---
-${summary.mainIdeas.map((idea) => `- ${idea}`).join('\n')}
-    `.trim();
+${summary.mainIdeas.map((i) => `- ${i}`).join("\n")}
+
+--- IMPROVEMENTS ---
+${summary.improvements.map((s) => `- ${s}`).join("\n")}
+`.trim();
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -87,11 +90,9 @@ ${summary.mainIdeas.map((idea) => `- ${idea}`).join('\n')}
               key={length}
               onClick={() => setSelectedLength(length)}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 capitalize text-sm sm:text-base ${
-                // --- THIS IS THE FIX ---
                 selectedLength === length
                   ? 'bg-blue-600 text-white shadow-md scale-105'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200' // Added the missing colon ':'
-                // -------------------------
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               {length}
@@ -152,6 +153,30 @@ ${summary.mainIdeas.map((idea) => `- ${idea}`).join('\n')}
             <CopyButton text={summary.mainIdeas.join('\n')} field="mainIdeas" />
           </div>
         </div>
+      </div>
+
+      {/* --- Improvements Card --- */}
+      <div className="bg-white rounded-xl shadow-lg border p-4 sm:p-6 relative group">
+        <div className="flex items-center space-x-3 mb-4">
+          <Wrench className="h-6 w-6 text-orange-600" />
+          <h3 className="text-xl font-bold text-gray-900">Improvement Suggestions</h3>
+        </div>
+        <div className="space-y-3">
+          {summary.improvements && summary.improvements.length > 0 ? (
+            summary.improvements.map((sugg, index) => (
+              <div key={index} className="bg-orange-50 rounded-lg p-4 border-l-4 border-orange-500">
+                <p className="text-gray-800 leading-relaxed">{sugg}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No improvement suggestions available.</p>
+          )}
+        </div>
+        {summary.improvements && summary.improvements.length > 0 && (
+          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <CopyButton text={summary.improvements.join('\n')} field="improvements" />
+          </div>
+        )}
       </div>
       
       {/* Animated "Copied!" Toast Notification */}

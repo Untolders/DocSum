@@ -25,7 +25,9 @@ const initialStages: ProcessingStage[] = [
   { name: 'Generating Summary', status: 'pending', message: 'Waiting for text extraction...' },
   { name: 'Extracting Key Points', status: 'pending', message: 'Waiting for summary...' },
   { name: 'Identifying Main Ideas', status: 'pending', message: 'Waiting for key points...' },
+  { name: 'Improvement Suggestions', status: 'pending', message: 'Waiting for main ideas...' }, 
 ];
+
 
 function App() {
   const [currentDocument, setCurrentDocument] = useState<DocumentFile | null>(null);
@@ -86,6 +88,12 @@ function App() {
       updateStage('Identifying Main Ideas', { status: 'in-progress', message: 'Determining main ideas...' });
       await new Promise(resolve => setTimeout(resolve, 200));
       updateStage('Identifying Main Ideas', { status: 'complete', message: `${generatedSummary.mainIdeas.length} main ideas identified.` });
+
+       // Improvement Suggestions
+      updateStage('Improvement Suggestions', { status: 'in-progress', message: 'Analyzing for improvements...' });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      updateStage('Improvement Suggestions', { status: 'complete', message: 'Improvement suggestions ready.' });
+
 
       setSummary(generatedSummary);
 
