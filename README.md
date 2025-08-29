@@ -69,7 +69,7 @@
 
 1. **Clone Repository**
 ```bash
-git clone https://github.com/yourusername/docsum.git
+git clone https://github.com/Untolders/docsum.git
 cd docsum
 ````
 
