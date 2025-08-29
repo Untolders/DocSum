@@ -144,7 +144,7 @@ Now, upload documents and generate AI-powered summaries!
 
 ---
 ## 🌐 Live Demo
-🔗 <a href="https://doc-sum-td55.vercel.app/" target="_blank">DocSum Live Demo</a>
+[DocSum Live Demo ↗️](https://doc-sum-td55.vercel.app/)
 
 
 ---
