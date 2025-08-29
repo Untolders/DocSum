@@ -5,6 +5,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
+
+
 // --- Custom Error Classes for Structured Handling ---
 class ApiError extends Error {
   constructor(statusCode, message) {
@@ -13,17 +15,22 @@ class ApiError extends Error {
   }
 }
 
+
 class BadRequestError extends ApiError {
   constructor(message = "Bad Request") {
     super(400, message);
   }
 }
 
+
+
 class ServiceUnavailableError extends ApiError {
   constructor(message = "Service Unavailable") {
     super(503, message);
   }
 }
+
+
 
 // --- Collect and Validate API Keys on Startup ---
 const apiKeys = [];
@@ -33,13 +40,17 @@ while (process.env[`GEMINI_API_KEY_${i}`]) {
   i++;
 }
 
+
+
 if (apiKeys.length === 0) {
-  console.error("❌ FATAL ERROR: No GEMINI_API_KEY found in .env file. Server is shutting down.");
+  console.error("FATAL ERROR: No GEMINI_API_KEY found in .env file. Server is shutting down.");
   process.exit(1); // Exit if no keys are found
 }
 
 const app = express();
 const port = 3001;
+
+
 
 // --- Middleware Setup ---
 app.use(
@@ -50,9 +61,13 @@ app.use(
 );
 app.use(express.json());
 
+
+
 // --- API Endpoint Logic ---
 app.post("/api/summarize", async (req, res, next) => {
   const { text } = req.body;
+
+
 
   // 1. Input Validation
   if (!text) {
@@ -60,6 +75,8 @@ app.post("/api/summarize", async (req, res, next) => {
   }
 
   let lastKnownError = null;
+
+
 
   // 2. Loop through API keys
   for (let k = 0; k < apiKeys.length; k++) {
@@ -71,6 +88,7 @@ app.post("/api/summarize", async (req, res, next) => {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // ... inside app.post("/api/summarize", ...)
+
 
 const prompt = `
   Analyze the following document and provide the output in a valid JSON format.
@@ -87,6 +105,8 @@ const prompt = `
   ---
 `;
 
+
+
 // ... the rest of the function remains the same
 
       const result = await model.generateContent(prompt);
@@ -97,19 +117,24 @@ const prompt = `
       const jsonString = responseText.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(jsonString);
       
-      console.log(`✅ Success with key #${k + 1}`);
+      console.log(`Success with key #${k + 1}`);
       return res.json(parsed); // Success! Send response and exit.
 
+
     } catch (error) {
-      console.warn(`⚠️ Key #${k + 1} failed.`);
+      console.warn(` Key #${k + 1} failed.`);
       lastKnownError = error; // Store the last error for context
     }
   }
 
+
+
   // 4. If all keys failed, pass a specific error to the handler
-  console.error("❌ All API keys failed.");
+  console.error("All API keys failed.");
   return next(new ServiceUnavailableError("All available API keys have failed, please try again later."));
 });
+
+
 
 // --- Centralized Error Handling Middleware ---
 // This middleware runs if any route calls `next(error)`.
@@ -127,5 +152,5 @@ app.use((err, req, res, next) => {
 
 
 app.listen(port, () => {
-  console.log(`🚀 Secure backend server running at http://localhost:${port}`);
+  console.log(` Secure backend server running at http://localhost:${port}`);
 });
