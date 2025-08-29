@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Summary } from "../types";
 
-// The server server URL.
+// ✅ Backend API URL
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api/summarize`;
 
 /**
@@ -35,7 +35,8 @@ export const generateSummary = async (text: string): Promise<Summary> => {
         errorMessage = `server error (${status}): ${serverMessage}`;
       } else if (axiosError.request) {
         // Request made but no response received
-        errorMessage = "No response received from server. Please try again later.";
+        errorMessage =
+          "No response received from server. Please try again later.";
       } else {
         // Something else happened while setting up the request
         errorMessage = `Request setup error: ${axiosError.message}`;
@@ -44,16 +45,21 @@ export const generateSummary = async (text: string): Promise<Summary> => {
       errorMessage = err.message;
     }
 
-    console.error("Error calling server server:", err);
+    console.error("Error calling secure server:", err);
     throw new Error(errorMessage);
   }
 };
 
 /**
- * Utility function to calculate reading time of given text.
+ * ✅ Utility function to calculate reading time of given text.
+ * Returns a user-friendly string like "2 min read".
  */
-export const calculateReadingTime = (text: string): number => {
-  const wordsPerMinute = 200;
-  const wordCount = text.trim().split(/\s+/).length;
-  return Math.ceil(wordCount / wordsPerMinute);
+export const calculateReadingTime = (text: string): string => {
+  if (!text) return "0 min read";
+
+  const wordsPerMinute = 200; // average adult reading speed
+  const words = text.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+
+  return `${minutes} min read`;
 };
